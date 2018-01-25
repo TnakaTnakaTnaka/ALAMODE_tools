@@ -2,6 +2,12 @@
 ALAMODE_OpenMX_tools
 ====
 
+#Overview
+ALAMODE is a software package to analyze phonon properties by using external DFT calculation code, OpenMX (DFT calcuation code) is not supported to ALAMODE. disp_openmx_mod.py and extract_openmx_mod.py are script to use ALAMODE by using OpenMX code.
+
+supercell.py is a script to generate supercell data file of OpenMX.
+
+
 # Tooles
 ## Original scripts and module script
 
