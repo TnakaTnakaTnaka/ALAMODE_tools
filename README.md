@@ -9,7 +9,7 @@ ALAMODE is a software package to analyze phonon properties by using external DFT
 supercell.py is a script to generate supercell data file of OpenMX.
 
 
-# Tooles
+# Tools
 ## Original scripts and module script
 
 * displace.py - script to create DFT calculation input file for all displacement pattern in ALAMODE. This script is developed by ALAMODE developer, a part of code is add by Yuto Tanaka to support OpenMX.
