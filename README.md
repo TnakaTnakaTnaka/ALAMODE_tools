@@ -2,7 +2,7 @@
 ALAMODE_OpenMX_tools
 ====
 
-#Overview
+# Overview
 
 ALAMODE is a software package to analyze phonon properties by using external DFT calculation code, OpenMX (DFT calcuation code) is not supported to ALAMODE. disp_openmx_mod.py and extract_openmx_mod.py are script to use ALAMODE by using OpenMX code.
 
