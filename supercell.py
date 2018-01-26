@@ -100,7 +100,7 @@ def get_prim_data(file_in):
 
     #errors
     if nat == 0:
-        print("Could not read dat file properly.")
+        print "Could not read dat file properly." 
         exit(1)
 
     return nat, x_ang, lavec, species, spin
@@ -178,17 +178,17 @@ def main():
     if options.file:
         file_in = options.file
     else:
-        print("input file is not selected.")
+        print "input file is not selected."
     
     if options.supercell:
         sc = options.supercell
     else:
-        print("supercell is not defined.")
+        print "supercell is not defined."
 
 
     m = np.array([sc[0], sc[1], sc[2]], dtype = np.int64)
     create_supercell(m, file_in, file_out)
-    print("coord.data is created")
+    print "coord.data is generated."
 
 if __name__ == "__main__":
   main()
