@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# extract_OpenMX.py
+# extract_openMX_mod.py
 #
 # Simple script to extract atomic displacements, atomic forces, and
 # energies from OpenMX output files.
