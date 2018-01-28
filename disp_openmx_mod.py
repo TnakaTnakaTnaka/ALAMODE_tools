@@ -16,7 +16,7 @@ Input file generator for displaced configurations.
 """
 
 import numpy as np
-from collections import OrderedDict
+#from collections import OrderedDict
 
 def read_OpenMX_input(file_in):
 
@@ -98,7 +98,8 @@ def write_OpenMX_input(prefix, counter, nzerofills, disp, lavec, file_in):
         if len(ss) > 0 and ss[0] == search_target1:
             nat = int(ss[1])
             x_frac = np.zeros((nat, 3))
-            coord = OrderedDict()
+            #coord = OrderedDict()
+            coord = {}
             for i in range(nat):
                 coord[i+1] = []
  

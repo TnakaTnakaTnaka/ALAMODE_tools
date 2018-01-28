@@ -891,7 +891,7 @@ cannot be given simultaneously."
     # Get nat, aa, x_frac0
 
     if code == "OpenMX":
-        aa, nat, x_frac0 = openmx.get_original_OpenMX_mod(file_original)
+        aa, aa_inv, nat, x_frac0 = openmx.get_original_OpenMX_mod(file_original)
 
     elif code == "VASP":
         aa, aa_inv, elems, nats, x_frac0 = read_POSCAR(file_original)
@@ -906,7 +906,7 @@ cannot be given simultaneously."
 
     if print_disp:
         if code == "OpenMX":
-            openmx.print_displacements_OpenMX(file_results, aa, nat, x_frac0,
+            openmx.print_displacements_OpenMX(file_results, aa, aa_inv, nat, x_frac0,
                                       convert_unit, disp_conv_factor, options.offset)
 
 

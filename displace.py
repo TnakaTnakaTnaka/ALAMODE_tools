@@ -27,14 +27,13 @@ parser.add_option('--mag',
                   help="Magnitude of displacement in units of \
                         Angstrom (default: 0.02)")
 
-parser.add_option('--OpenMX',
-                  metavar='orig.dat',
-                  help="VASP POSCAR file with equilibrium atomic \
-                        positions (default: None)")
-
 parser.add_option('--prefix',
                   help="Prefix of the files to be created. ")
 
+parser.add_option('--OpenMX',
+                  metavar='orig.dat',
+                  help="dat file with equilibrium atomic \
+                        positions (default: None)")
 parser.add_option('--QE',
                   metavar='orig.pw.in',
                   help="Quantum-ESPRESSO input file with equilibrium atomic positions (default: None)")
