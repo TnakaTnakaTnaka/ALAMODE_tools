@@ -100,7 +100,6 @@ def main():
         ylabel = "Frequency (cm^{-1})"
         factor = 1.0
 
-
     generate_banddata(prefix, file_in, ylabel, factor)
 
     print("%s.gnuband and %s.banddata are generated." %(prefix, prefix)) 
