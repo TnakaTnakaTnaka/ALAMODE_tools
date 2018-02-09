@@ -27,12 +27,7 @@ parser.add_option('--file', help="OpenMX input file (*.dat)")
 parser.add_option('--supercell', help="l*m*n supercell (lmn)")
 
 def get_prim_data(file_in):
-    search_target1 = "Atoms.Number"
-    search_target2 = "<Atoms.SpeciesAndCoordinates"
-    search_target3 = "Atoms.SpeciesAndCoordinates.Unit"
-    search_target4 = "<Atoms.UnitVectors"
-
-    str_frac = ["Frac", "frac", "Frac"]
+    search_target = ["atoms.number", "<atoms.speciesandcoordinates", "atoms.speciesandcoordinates.unit", "<atoms.unitvectors"]
 
     fin = open(file_in, 'r')
 
@@ -49,15 +44,15 @@ def get_prim_data(file_in):
     for line in fin:
         ss = line.strip().split()
         #number of atoms
-        if len(ss) > 0 and ss[0] == search_target1:
+        if len(ss) > 0 and ss[0].lower() == search_target[0]:
             nat = int(ss[1])
             x_ang = np.zeros([nat, 3])
             species = []
             spin = np.zeros([nat, 2], dtype = np.float64)
  
         #coordinates_unit
-        if len(ss) > 0 and ss[0] == search_target3:
-            coord_unit = ss[1]
+        if len(ss) > 0 and ss[0].lower() == search_target[2]:
+            coord_unit = ss[1].lower()
         
         #coordinates
         if coord_flag == 1:
@@ -83,10 +78,10 @@ def get_prim_data(file_in):
             if lavec_row == 3:
                 lavec_flag = 0
  
-        if len(ss) > 0 and ss[0] == search_target4:
+        if len(ss) > 0 and ss[0].lower() == search_target[3]:
             lavec_flag = 1
 
-        if len(ss) > 0 and ss[0] == search_target2:
+        if len(ss) > 0 and ss[0].lower() == search_target[1]:
             coord_flag = 1
 
     fin.close()
@@ -94,7 +89,7 @@ def get_prim_data(file_in):
     #convert to ang
     conv = (np.linalg.inv(lavec)).T
     inv_conv = np.linalg.inv(conv)
-    if coord_unit in str_frac:
+    if coord_unit == 'frac':
         for i in range(nat):
             x_ang[i] = np.dot(inv_conv, x_ang[i])
 
