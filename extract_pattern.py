@@ -2,6 +2,9 @@
 #
 # extract_pattern.py
 #
+# If you calcule atomic forces in displacement patterns which the cutoff
+# radius is in the range of r1(file1) and r2(file2), this script can
+# generate the pattern file (extract.pattern) for such calculation.
 #
 # Copyright (c) 2018 Yuto Tanaka
 #
@@ -11,9 +14,7 @@
 
 $ python extract_pattern.py --file1=file1.pattern --file2=file2.pattern
 
-If you calcule atomic forces in displacement patterns which the cutoff
-radius is in the range of r1(file1) and r2(file2), this script can
-generate the pattern file (extract.pattern) for such calculation.
+
 """
 
 import argparse
