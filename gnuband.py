@@ -2,26 +2,27 @@
 #
 # gnuband.py
 #
-# Script to generate band data for gnuplot and gnuplot script file.
+# Script to generate band data file and gnuplot script file for gnuplot  .
 #
 # Copyright (c) 2018 Yuto Tanaka
 #
 
-""" 
+"""
 --- How to use ---
 $ python bandgnu.py --file=file.dat (--unit=meV)
 
 default unit is cm^(-1).
 """
 
-import numpy as np
-import optparse
+import argparse
 
 usage = "usage: %prog [options]"
-parser = optparse.OptionParser(usage=usage)
-parser.add_option('--file', help="OpenMX input file (*.dat)")
-parser.add_option("-u", "--unit", action="store", type="string", dest="unitname", default="kayser", help="print the band dispersion in units of UNIT. Available options are kayser, meV, and THz", metavar="UNIT")
-
+parser = argparse.ArgumentParser(usage=usage)
+parser.add_argument('--file', help="OpenMX input file (*.dat)")
+parser.add_argument("-u", "--unit", action="store", type="string", \
+        dest="unitname", default="kayser", help="print the band dispersion \
+        in units of UNIT. Available options are kayser, meV, and THz", \
+        metavar="UNIT")
 
 def generate_gnuband(prefix, file_band, k_path, k_point, ylabel, factor):
 
@@ -34,7 +35,7 @@ def generate_gnuband(prefix, file_band, k_path, k_point, ylabel, factor):
         xtics += " '" + k_path[i] + "' " + k_point[i]
         if i < num_path - 1:
             xtics += ','
-        
+
     file_gnu = prefix + ".gnuband"
     f_gnu = open(file_gnu, 'w')
 
@@ -57,22 +58,33 @@ def generate_banddata(prefix, file_in, ylabel, factor):
     f_in = open(file_in, 'r')
     file_band = prefix + ".banddata"
     f_band = open(file_band, 'w')
-    
-    k_path = f_in.readline().split() 
+
+    k_path = f_in.readline().split()
     k_point = f_in.readline().split()
     unit = f_in.readline().split()
+    k_max = float(k_point[-1])
+    k_grid = []
 
+    # read bands data
     band = []
     for line in f_in:
         data = line.strip().split()
         band.append(data)
-         
-    num_eigen = len(band[0])
-    num_kgrid = len(band)
 
+    num_eigen = len(band[0]) # number of eigen value
+    num_kgrid = len(band)    # number of k grid
+
+    # normalize k point
+    for i in range(1, len(k_point)):
+        k_point[i] = str(float(k_point[i]) / k_max)
+
+    for i in range(num_kgrid):
+        k_grid.append(float(band[i][0]) / k_max)
+
+    # output
     for i in range(1, num_eigen):
         for j in range(num_kgrid):
-            f_band.write("%f %f \n" % (float(band[j][0]), float(band[j][i])))
+            f_band.write("%f %f \n" % (k_grid[j], float(band[j][i])))
         f_band.write("\n")
 
     f_band.close()
@@ -81,18 +93,19 @@ def generate_banddata(prefix, file_in, ylabel, factor):
 
 
 def main():
-    options, args = parser.parse_args()
-    
+    options = parser.parse_args()
+
     if options.file:
         file_in = options.file
     else:
         print("input file is not selected.")
-   
+
     prefix = file_in.split('.')[0]
 
     if options.unitname.lower() == "mev":
         ylabel = "Frequency (meV)"
-        factor = 0.0299792458 * 1.0e+12 * 6.62606896e-34 / 1.602176565e-19 * 1000
+        factor = 0.0299792458 * 1.0e+12 * 6.62606896e-34 \
+                    / 1.602176565e-19 * 1000
     elif options.unitname.lower() == "thz":
         ylabel = "Frequency (THz)"
         factor = 0.0299792458
@@ -102,8 +115,7 @@ def main():
 
     generate_banddata(prefix, file_in, ylabel, factor)
 
-    print("%s.gnuband and %s.banddata are generated." %(prefix, prefix)) 
-
+    print("%s.gnuband and %s.banddata are generated." %(prefix, prefix))
 
 if __name__ == "__main__":
-  main()
+    main()
