@@ -1,5 +1,5 @@
 
-ALAMODE_OpenMX_tools
+ALAMODE_tools
 ====
 
 # Overview
