@@ -8,7 +8,7 @@
 # Copyright (c) 2018 Yuto Tanaka
 #
 
-""" 
+"""
 --- How to use ---
 If you create (l*m*n) supercell date file, please type the command.
 (l,m,n should be integer.)
@@ -17,17 +17,17 @@ $ python supercell.py --file=file.dat --supercell=lmn
 
 """
 
+import argparse
 import numpy as np
-import math
-import optparse
 
 usage = "usage: %prog [options]"
-parser = optparse.OptionParser(usage=usage)
-parser.add_option('--file', help="OpenMX input file (*.dat)")
-parser.add_option('--supercell', help="l*m*n supercell (lmn)")
+parser = argparse.ArgumentParser(usage=usage)
+parser.add_argument('--file', help="OpenMX input file (*.dat)")
+parser.add_argument('--supercell', help="l*m*n supercell (lmn)")
 
 def get_prim_data(file_in):
-    search_target = ["atoms.number", "<atoms.speciesandcoordinates", "atoms.speciesandcoordinates.unit", "<atoms.unitvectors"]
+    search_target = ["atoms.number", "<atoms.speciesandcoordinates", \
+                 "atoms.speciesandcoordinates.unit", "<atoms.unitvectors"]
 
     fin = open(file_in, 'r')
 
@@ -44,25 +44,25 @@ def get_prim_data(file_in):
     for line in fin:
         ss = line.strip().split()
         #number of atoms
-        if len(ss) > 0 and ss[0].lower() == search_target[0]:
+        if ss != [] and ss[0].lower() == search_target[0]:
             nat = int(ss[1])
             x_ang = np.zeros([nat, 3])
             species = []
-            spin = np.zeros([nat, 2], dtype = np.float64)
- 
+            spin = np.zeros([nat, 2], dtype=np.float64)
+
         #coordinates_unit
-        if len(ss) > 0 and ss[0].lower() == search_target[2]:
+        if ss != [] and ss[0].lower() == search_target[2]:
             coord_unit = ss[1].lower()
-        
+
         #coordinates
         if coord_flag == 1:
             species.append(ss[1])
             for i in range(2):
                 spin[coord_row][i] = ss[i+5]
-    
+
             for i in range(3):
-                x_ang[coord_row][i] = float(ss[i+2]) 
-       
+                x_ang[coord_row][i] = float(ss[i+2])
+
             coord_row += 1
             if coord_row == nat:
                 coord_flag = 0
@@ -77,11 +77,11 @@ def get_prim_data(file_in):
             lavec_row += 1
             if lavec_row == 3:
                 lavec_flag = 0
- 
-        if len(ss) > 0 and ss[0].lower() == search_target[3]:
+
+        if ss != [] and ss[0].lower() == search_target[3]:
             lavec_flag = 1
 
-        if len(ss) > 0 and ss[0].lower() == search_target[1]:
+        if ss != [] and ss[0].lower() == search_target[1]:
             coord_flag = 1
 
     fin.close()
@@ -95,18 +95,18 @@ def get_prim_data(file_in):
 
     #errors
     if nat == 0:
-        print "Could not read dat file properly." 
+        print("Could not read dat file properly.")
         exit(1)
 
     return nat, x_ang, lavec, species, spin
 
 
 def create_supercell(m, file_in, file_out):
-    
+
     f_out = open(file_out, 'w')
-    Bohr_to_angstrom = 0.5291772108    
+    Bohr_to_angstrom = 0.5291772108
     atom = 0
-    
+
     nat, x_ang, lavec, species, spin = get_prim_data(file_in)
     nat_sc = nat * m[0] * m[1] * m[2]
     lavec_sc = (m * lavec.T).T
@@ -117,24 +117,22 @@ def create_supercell(m, file_in, file_out):
         for j in range(m[1]):
             for k in range(m[2]):
                 tran_vec = np.zeros([3])
-                m_sc = np.array([i, j, k], dtype = np.float64)
+                m_sc = np.array([i, j, k], dtype=np.float64)
                 for l in range(3):
                     tran_vec += (m_sc * lavec.T).T[l]
                 for l in range(nat):
-                    x_frac[atom + l] = x_ang[l] + tran_vec 
+                    x_frac[atom + l] = x_ang[l] + tran_vec
                     x_frac[atom + l] = np.dot(conv, x_frac[atom + l])
                 atom += nat
 
-
-    
     f_out.write("Atoms.Number       %d \n" % (nat_sc))
     f_out.write("Atoms.SpeciesAndCoordinates.Unit   frac \n")
     f_out.write("<Atoms.SpeciesAndCoordinates \n")
 
     for i in range(nat_sc):
-        f_out.write("%3d  %s  %12.10f  %12.10f  %12.10f  %2.1f %2.1f \n" % 
-                (i+1, species[int(i%nat)], 
-                    x_frac[i][0], x_frac[i][1], x_frac[i][2], 
+        f_out.write("%3d  %s  %12.10f  %12.10f  %12.10f  %2.1f %2.1f \n" \
+                %  (i+1, species[int(i%nat)], \
+                    x_frac[i][0], x_frac[i][1], x_frac[i][2], \
                     spin[int(i%nat)][0], spin[int(i%nat)][1]))
 
     f_out.write("Atoms.SpeciesAndCoordinates> \n")
@@ -144,11 +142,10 @@ def create_supercell(m, file_in, file_out):
     f_out.write("Atoms.UnitVectors.Unit   Ang \n")
     f_out.write("<Atoms.UnitVectors \n")
     for i in range(3):
-        f_out.write("%12.10f  %12.10f  %12.10f \n" % (lavec_sc[i][0], lavec_sc[i][1], lavec_sc[i][2]))
+        f_out.write("%12.10f  %12.10f  %12.10f\n" \
+                % (lavec_sc[i][0], lavec_sc[i][1], lavec_sc[i][2]))
 
     f_out.write("Atoms.UnitVectors> \n")
-
-    
     # write unit vector (bohr)
     f_out.write("\n")
     f_out.write("<alamode alm cell fields> \n")
@@ -157,7 +154,8 @@ def create_supercell(m, file_in, file_out):
     f_out.write("  %12.10f \n" %(lavec_sc[0][0]))
     lavec_sc /= lavec_sc[0][0]
     for i in range(3):
-        f_out.write("  %12.10f  %12.10f  %12.10f \n" % (lavec_sc[i][0], lavec_sc[i][1], lavec_sc[i][2]))
+        f_out.write("  %12.10f  %12.10f  %12.10f \n"\
+                % (lavec_sc[i][0], lavec_sc[i][1], lavec_sc[i][2]))
 
     f_out.write("/ \n")
 
@@ -165,25 +163,24 @@ def create_supercell(m, file_in, file_out):
 
 
 def main():
-    
-    file_out = "coord.data"
 
-    options, args = parser.parse_args()
+    file_out = "coord.data"
+    options = parser.parse_args()
 
     if options.file:
         file_in = options.file
     else:
-        print "input file is not selected."
-    
+        print("Input file is not selected.")
+
     if options.supercell:
         sc = options.supercell
     else:
-        print "supercell is not defined."
+        print("Supercell is not defined.")
 
 
-    m = np.array([sc[0], sc[1], sc[2]], dtype = np.int64)
+    m = np.array([sc[0], sc[1], sc[2]], dtype=np.int64)
     create_supercell(m, file_in, file_out)
-    print "coord.data is generated."
+    print("coord.data is generated.")
 
 if __name__ == "__main__":
-  main()
+    main()
