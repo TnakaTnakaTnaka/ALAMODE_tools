@@ -16,6 +16,6 @@ ALAMODE software package
 http://alamode.readthedocs.io/
 
 # Author
-Yuto Tanaka (Kanazawa University)
+Yuto Tanaka 
 
 
