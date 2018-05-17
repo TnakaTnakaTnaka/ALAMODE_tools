@@ -9,7 +9,7 @@
 
 """
 --- How to use ---
-$ python bandgnu.py --file=file.dat (--unit=meV)
+$ python bandgnu.py --file=file.bands (--unit=meV)
 
 default unit is cm^(-1).
 """
@@ -18,17 +18,16 @@ import argparse
 
 usage = "usage: %prog [options]"
 parser = argparse.ArgumentParser(usage=usage)
-parser.add_argument('--file', help="OpenMX input file (*.dat)")
-parser.add_argument("-u", "--unit", action="store", type="string", \
+parser.add_argument('--file', help="bands file")
+parser.add_argument("-u", "--unit", action="store", type=str, \
         dest="unitname", default="kayser", help="print the band dispersion \
         in units of UNIT. Available options are kayser, meV, and THz", \
-        metavar="UNIT")
+        metavar="Unit")
 
 def generate_gnuband(prefix, file_band, k_path, k_point, ylabel, factor):
 
     num_path = len(k_path)
     xtics = ""
-
     for i in range(1, num_path):
         if k_path[i] == 'G':
             k_path[i] = "{/Symbol G}"
@@ -42,6 +41,7 @@ def generate_gnuband(prefix, file_band, k_path, k_point, ylabel, factor):
     f_gnu.write("# gnuplot\n")
     f_gnu.write("unset key\n")
     f_gnu.write("set ylabel '%s'\n" %(ylabel))
+    f_gnu.write("set yrange [0:]\n")
     f_gnu.write("set xtics (%s)\n" % (xtics))
     f_gnu.write("set grid xtics\n")
     f_gnu.write("\n")
