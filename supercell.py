@@ -13,7 +13,7 @@
 If you create (l*m*n) supercell date file, please type the command.
 (l,m,n should be integer.)
 
-$ python supercell.py --file=file.dat --supercell=lmn
+$ python supercell.py --file=(prefix).dat --supercell=lmn
 
 """
 
@@ -24,6 +24,7 @@ usage = "usage: %prog [options]"
 parser = argparse.ArgumentParser(usage=usage)
 parser.add_argument('--file', help="OpenMX input file (*.dat)")
 parser.add_argument('--supercell', help="l*m*n supercell (lmn)")
+
 
 def get_prim_data(file_in):
     search_target = ["atoms.number", "<atoms.speciesandcoordinates", \
@@ -39,50 +40,49 @@ def get_prim_data(file_in):
     coord_flag = 0
     coord_row = 0
 
-
     #read oroginal file and pull out some infomations
     for line in fin:
         ss = line.strip().split()
         #number of atoms
-        if ss != [] and ss[0].lower() == search_target[0]:
-            nat = int(ss[1])
-            x_ang = np.zeros([nat, 3])
-            species = []
-            spin = np.zeros([nat, 2], dtype=np.float64)
-
-        #coordinates_unit
-        if ss != [] and ss[0].lower() == search_target[2]:
-            coord_unit = ss[1].lower()
-
-        #coordinates
-        if coord_flag == 1:
-            species.append(ss[1])
-            for i in range(2):
-                spin[coord_row][i] = ss[i+5]
-
-            for i in range(3):
-                x_ang[coord_row][i] = float(ss[i+2])
-
-            coord_row += 1
-            if coord_row == nat:
-                coord_flag = 0
-
+        if ss == []:
+            continue
         else:
-            pass
+            if ss[0].lower() == search_target[0]:
+                nat = int(ss[1])
+                x_ang = np.zeros([nat, 3])
+                species = []
+                spin = np.zeros([nat, 2], dtype=np.float64)
 
-        #latice vector
-        if lavec_flag == 1:
-            for i in range(3):
-                lavec[lavec_row][i] = float(ss[i])
-            lavec_row += 1
-            if lavec_row == 3:
-                lavec_flag = 0
+            #coordinates_unit
+            if ss[0].lower() == search_target[2]:
+                coord_unit = ss[1].lower()
 
-        if ss != [] and ss[0].lower() == search_target[3]:
-            lavec_flag = 1
+            #coordinates
+            if coord_flag == 1:
+                species.append(ss[1])
+                for i in range(2):
+                    spin[coord_row][i] = ss[i+5]
 
-        if ss != [] and ss[0].lower() == search_target[1]:
-            coord_flag = 1
+                for i in range(3):
+                    x_ang[coord_row][i] = float(ss[i+2])
+
+                coord_row += 1
+                if coord_row == nat:
+                    coord_flag = 0
+
+            #latice vector
+            if lavec_flag == 1:
+                for i in range(3):
+                    lavec[lavec_row][i] = float(ss[i])
+                lavec_row += 1
+                if lavec_row == 3:
+                    lavec_flag = 0
+
+            if ss[0].lower() == search_target[3]:
+                lavec_flag = 1
+
+            if ss[0].lower() == search_target[1]:
+                coord_flag = 1
 
     fin.close()
 
